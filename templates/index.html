@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>表单和表格展示</title>
+    <link rel="stylesheet" href="static/css/bootstrap.min.css" >
+    <link rel="stylesheet" href="static/css/xspreadsheet.css" >
+    <style>
+        .form-container {
+            height: 100vh;
+            width: 30vw;
+            overflow-y: auto;
+        }
+        .table-container {
+            height: 100vh;
+            width: 69vw;
+            overflow-y: auto;
+        }
+          .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+          }
+          .input-group label {
+            margin-right: 10px;
+            white-space: nowrap;
+          }
+          .input-group input {
+            flex: 1;
+          }
+    </style>
+</head>
+
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 左侧表单 -->
+            <div class="col-md-4 form-container">
+                <form id="dataForm">
+                    <h2 class="mb-4">信息收集表单</h2>
+
+                    <!-- 选项卡导航 -->
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button" role="tab" aria-controls="basic" aria-selected="true">基础信息</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="rates-tab" data-bs-toggle="tab" data-bs-target="#rates" type="button" role="tab" aria-controls="rates" aria-selected="false">建设投资估算(附表1)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="construction-tab" data-bs-toggle="tab" data-bs-target="#construction" type="button" role="tab" aria-controls="construction" aria-selected="false">流动资金估算(附表2)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="other-tab" data-bs-toggle="tab" data-bs-target="#other" type="button" role="tab" aria-controls="other" aria-selected="false">借款还本付息(附表3)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="investment-tab" data-bs-toggle="tab" data-bs-target="#investment" type="button" role="tab" aria-controls="investment" aria-selected="false">投资使用计划与资金筹措(附表4)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="depreciation-tab" data-bs-toggle="tab" data-bs-target="#depreciation" type="button" role="tab" aria-controls="depreciation" aria-selected="false">固定资产折旧(附表5)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="Amortization-tab" data-bs-toggle="tab" data-bs-target="#Amortization" type="button" role="tab" aria-controls="Amortization" aria-selected="false">无形资产与其他资产摊销(附表6)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="Cost-tab" data-bs-toggle="tab" data-bs-target="#Cost" type="button" role="tab" aria-controls="Cost" aria-selected="false">总成本估算(附表7)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="Revenue-tab" data-bs-toggle="tab" data-bs-target="#Revenue" type="button" role="tab" aria-controls="Revenue" aria-selected="false">营业收入和税金及附加(附表8)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="Pr_lo-tab" data-bs-toggle="tab" data-bs-target="#Pr_lo" type="button" role="tab" aria-controls="Pr_lo" aria-selected="false">损益表基础数据(附表10)</button>
+                        </li>
+                        <!-- 添加更多选项卡按钮，直到八个 -->
+                    </ul>
+
+                    <!-- 选项卡内容 -->
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="basic" role="tabpanel" aria-labelledby="basic-tab">
+                            <div class="mb-3">
+                                <h4>项目基础信息</h4>
+                            </div>
+                                <!-- 项目名称 -->
+                               <div class="mb-3">
+                                    <label for="projectname" class="form-label">项目名称</label>
+                                    <input type="text" class="form-control" id="projectname" name="projectname">
+                               </div>
+
+                               <div class="mb-3">
+                                    <label for="projectplace" class="form-label">建设地点</label>
+                                    <input type="text" class="form-control" id="projectplace" name="projectplace">
+                               </div>
+
+                               <div class="mb-3">
+                                    <label for="projectind" class="form-label">项目所处行业</label>
+                                    <input type="text" class="form-control" id="projectind" name="projectind">
+                               </div>
+
+                               <div class="mb-3">
+                                    <label for="input1" class="form-label">项目计算期（年）</label>
+                                    <input type="number" class="form-control" id="input1" name="input1" min="1" onchange="generateProductionLoad()">
+                               </div>
+
+                               <div class="mb-3">
+                                    <label for="input2" class="form-label">项目建设期（年）</label>
+                                    <input type="number" class="form-control" id="input2" name="input2" min="1" onchange="generateProductionLoad()">
+                               </div>
+
+                                <div class="mb-3">
+                                    <h5>生产负荷基础数据</h5>
+                                    <div id="productionLoadFields"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="benchmarkyield" class="form-label">基准收益率i0(%)</label>
+                                    <input type="number" step = "0.1" class="form-control" id="benchmarkyield" name="benchmarkyield">
+                               </div>
+
+                                <div class="mb-3">
+                                    <label for="benchmark_s_paybackperiod" class="form-label">基准静态回收期（年）</label>
+                                    <input type="number" step = "0.1" class="form-control" id="benchmark_s_paybackperiod" name="benchmark_s_paybackperiod">
+                               </div>
+
+                                <div class="mb-3">
+                                    <label for="benchmark_d_paybackperiod" class="form-label">基准动态回收期（年）</label>
+                                    <input type="number" step = "0.1" class="form-control" id="benchmark_d_paybackperiod" name="benchmark_d_paybackperiod">
+                               </div>
+                        </div>
+
+                       <div class="tab-pane fade" id="rates" role="tabpanel" aria-labelledby="rates-tab">
+                            <div class="mb-3">
+                                <h4>1、费率基础数据</h4>
+                            </div>
+                                <div class="mb-3">
+                                    <label for="install_rate" class="form-label">安装费率（%）</label>
+                                    <input type="number" step="0.1" class="form-control" id="install_rate" name="install_rate">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="trans_rate" class="form-label">设备运杂费率（%）</label>
+                                    <input type="number" step="0.1" class="form-control" id="trans_rate" name="trans_rate">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="pre_rate" class="form-label">基本预备费率（%）</label>
+                                    <input type="number" step="0.1" class="form-control" id="pre_rate" name="pre_rate">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="preup_rate" class="form-label">涨价预备费率（%）</label>
+                                    <input type="number" step="0.1" class="form-control" id="preup_rate" name="preup_rate">
+                                </div>
+
+                            <div class="mb-3">
+                                <h4>2、工程费用基础数据</h4>
+                            </div>
+                                <div class="mb-3">
+                                    <div id="constructionCosts">
+                                    </div>
+                                    <button type="button" class="btn btn-secondary mt-2" id="addCostBtn">添加工程</button>
+                                </div>
+
+                            <div class="mb-3">
+                                <h4>3、其他费用基础数据</h4>
+                            </div>
+                            <div class="mb-3">
+                                <div id="otherCosts">
+                                </div>
+                                <button type="button" class="btn btn-secondary mt-2" id="addotherCostBtn">添加费用</button>
+                            </div>
+                            <div class="mb-3">
+                             <h4>当前建设投资总额为：<span id="totalInvestment1"></span></h4>
+                            </div>
+                        </div>
+
+
+                        <div class="tab-pane fade" id="construction" role="tabpanel" aria-labelledby="construction-tab">
+                                <div class="mb-3">
+                                    <label for="days1" class="form-label">应收账款周转天数（天）</label>
+                                    <input type="number" step="1" class="form-control" id="days1" name="days1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="days2" class="form-label">原材料周转天数（天）</label>
+                                    <input type="number" step="1" class="form-control" id="days2" name="days2">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="days3" class="form-label">燃料动力周转天数（天）</label>
+                                    <input type="number" step="1" class="form-control" id="days3" name="days3">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="days4" class="form-label">在产品周转天数（天）</label>
+                                    <input type="number" step="1" class="form-control" id="days4" name="days4">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="days5" class="form-label">产成品周转天数（天）</label>
+                                    <input type="number" step="1" class="form-control" id="days5" name="days5">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="days6" class="form-label">现金周转天数（天）</label>
+                                    <input type="number" step="1" class="form-control" id="days6" name="days6">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="days7" class="form-label">应付账款周转天数（天）</label>
+                                    <input type="number" step="1" class="form-control" id="days7" name="days7">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="days8" class="form-label">流资借款利率（%）</label>
+                                    <input type="number" step="0.1" class="form-control" id="days8" name="days8">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="days9" class="form-label">流动资金借款比例（%）</label>
+                                    <input type="number" step="0,1" class="form-control" id="days9" name="days9">
+                                </div>
+
+                        </div>
+
+                        <div class="tab-pane fade" id="other" role="tabpanel" aria-labelledby="other-tab">
+                                <div class="mb-3">
+                                    <label for="loadrate" class="form-label">固定资产借款利率（%）</label>
+                                    <input type="number" step="0,1" class="form-control" id="loadrate" name="loadrate">
+                                </div>
+
+                                <div class="mb-3">
+                                <label class="form-label">还本方式</label>
+                                <div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="repayMethod" id="ave_capital" value="ave_capital">
+                                        <label class="form-check-label" for="ave_capital">等额本金偿还</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="repayMethod" id="ave_cap_int" value="ave_cap_int">
+                                        <label class="form-check-label" for="ave_cap_int">等额本息偿还</label>
+                                    </div>
+                                </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="payTime" class="form-label">偿还时间（年）</label>
+                                    <input type="number" step="1" class="form-control" id="payTime" name="payTime">
+                                </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="investment" role="tabpanel" aria-labelledby="investment-tab">
+                            <div class="mb-3">
+                                <h4>建设投资方案<span id="totalInvestment"></span></h4>
+                                <div id="constInvenst">
+                                </div>
+                                <button type="button" class="btn btn-secondary mt-2" id="addconstInvenst">添加年度建设投资</button>
+                            </div>
+
+                            <div class="mb-3">
+                                <h4>建设投资资金筹措计划</h4>
+                                <div id="invPlan">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="depreciation" role="tabpanel" aria-labelledby="depreciation-tab">
+
+                             <div class="mb-3">
+                                <h4>固定资产折旧数据</h4>
+                                <div class="mb-3">
+                                    <div class="input-group" >
+                                        <label >设备工程与安装工程：</label>
+                                        <input  type="number" step="1"class="form-control" name="dep_year1" placeholder="折旧年限（年）">
+                                        <input type="number" step="0.1" class="form-control" name="res_rate1" placeholder="残值率（%）">
+                                    </div>
+                                    <div class="input-group" >
+                                        <label >建筑工程、预备费与建设期利息：</label>
+                                        <input  type="number" step="1"class="form-control" name="dep_year2" placeholder="折旧年限（年）">
+                                        <input type="number" step="0.1" class="form-control" name="res_rate2" placeholder="残值率（%）">
+                                    </div>
+                                    <div class="input-group" >
+                                        <label >土地使用权：</label>
+                                        <input  type="number" step="1"class="form-control" name="dep_year3" placeholder="折旧年限（年）">
+<!--                                        <input type="number" step="0.1" class="form-control" name="res_rate3" placeholder="残值率（%）">-->
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        <div class="mb-3">
+                            <label class="form-label">折旧方式</label>
+                            <div>
+<!--                                <div class="form-check">-->
+<!--                                    <input class="form-check-input" type="radio" name="depreciationMethod" id="fixedRate" value="fixedRate">-->
+<!--                                    <label class="form-check-label" for="fixedRate">平均年限-按固定折旧率</label>-->
+<!--                                </div>-->
+<!--                                <div class="form-check">-->
+<!--                                    <input class="form-check-input" type="radio" name="depreciationMethod" id="byresidualValue" value="residualValue">-->
+<!--                                    <label class="form-check-label" for="byresidualValue">平均年限-按折旧残值</label>-->
+<!--                                </div>-->
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="depreciationMethod" id="byresidualValue" value="residualValue">
+                                    <label class="form-check-label" for="byresidualValue">平均年限法</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="depreciationMethod" id="byDouble" value="DDB">
+                                    <label class="form-check-label" for="byDouble">双倍余额递减法</label>
+                                </div>
+                                 <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="depreciationMethod" id="bySum" value="SYD">
+                                    <label class="form-check-label" for="bySum">年数总和法</label>
+                                </div>
+                            </div>
+                        </div>
+
+<!--                        <div id="fixedRateInput" class="mb-3" style="display: none;">-->
+<!--                            <label for="depreciationRate" class="form-label">折旧率（%）</label>-->
+<!--                            <input type="number" step="0.1" class="form-control" id="depreciationRate" name="depreciationRate">-->
+<!--                        </div>-->
+
+<!--                        <div id="residualValueInput" class="mb-3" style="display: none;">-->
+<!--                            <label for="residualValue" class="form-label">折旧残值（单位：万元）</label>-->
+<!--                            <input type="number" step="1" class="form-control" id="residualValue" name="residualValuename">-->
+<!--                        </div>-->
+                        </div>
+
+                    <div class="tab-pane fade" id="Amortization" role="tabpanel" aria-labelledby="Amortization-tab">
+                         <div class="mb-3">
+                                <h4>无形及其它资产摊销数据</h4>
+                                <div class="input-group" >
+                                    <label >无形资产</label>
+                                    <input type="number" step="1" class="form-control" name="amo_year1" placeholder="摊销年限">
+                                </div>
+                                <div class="input-group" >
+                                    <label >其他资产</label>
+                                    <input type="number" step="1" class="form-control" name="amo_year2" placeholder="摊销年限">
+                                </div>
+                         </div>
+                    </div>
+
+                   <div class="tab-pane fade" id="Cost" role="tabpanel" aria-labelledby="Cost-tab">
+                            <div class="mb-3">
+                                <h4>外购原材料(假设与生产规模成正比)</h4>
+                                <div class="input-group" >
+                                    <label >年设计产量</label>
+                                    <input type="number" step="1" class="form-control" name="production1" placeholder="数值">
+<!--                                    <input type="text" class="form-control" name="dan1" placeholder="单位">-->
+                                </div>
+                                <div class="input-group" >
+                                    <label >单位产品原材料成本</label>
+                                    <input type="number" step="1" class="form-control" name="production2" placeholder="数值">
+<!--                                    <input type="text" class="form-control" name="dan2" placeholder="单位">-->
+                                </div>
+
+                                <h4>外购燃料及动力(假设与生产规模成正比)</h4>
+                                <div class="input-group" >
+                                    <label >年设计产量</label>
+                                    <input type="number" step="1" class="form-control" name="production3" placeholder="数值">
+<!--                                    <input type="text" class="form-control" name="dan3" placeholder="单位">-->
+                                </div>
+                                <div class="input-group" >
+                                    <label >单位产品燃料动力成本</label>
+                                    <input type="number" step="1" class="form-control" name="production4" placeholder="数值">
+<!--                                    <input type="text" class="form-control" name="dan4" placeholder="单位">-->
+                                </div>
+
+                                <h4>工资及福利费(假设与生产规模成正比)</h4>
+                                <div class="input-group" >
+                                    <label >员工核定人数</label>
+                                    <input type="number" step="1" class="form-control" name="production5" placeholder="数值">
+                                </div>
+                                <div class="input-group" >
+                                    <label >人均年工资福利</label>
+                                    <input type="number" step="1" class="form-control" name="production6" placeholder="万元">
+<!--                                    <input type="text" class="form-control" name="dan6" placeholder="单位">-->
+                                </div>
+
+                               <h4>其他费率</h4>
+                                <div class="input-group" >
+                                    <label >修理费率（%）</label>
+                                    <input type="number" step="0.1" class="form-control" name="production7" placeholder="数值">
+                                </div>
+
+                                <div class="input-group" >
+                                    <label >其他费用综合费率（%）</label>
+                                    <input type="number" step="0.1" class="form-control" name="production8" placeholder="数值">
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="tab-pane fade" id="Revenue" role="tabpanel" aria-labelledby="Revenue-tab">
+                            <div class="mb-3">
+                                <div class="input-group" >
+                                    <label >产品年销售量</label>
+                                    <input id="test1" type="number" step="1" class="form-control" name="production9" placeholder="数值">
+                                    <input type="text" class="form-control" placeholder="单位">
+                                </div>
+
+                                <div class="input-group" >
+                                    <label >产品单价</label>
+                                    <input type="number" step="0.1" class="form-control" name="production10" placeholder="万元/单位">
+<!--                                    <input type="text" class="form-control" placeholder="单位">-->
+                                </div>
+
+                                <div class="input-group" >
+                                    <label >增值税率（%）</label>
+                                    <input type="number" step="0.1" class="form-control" name="production11" placeholder="数值">
+                                </div>
+
+                                <div class="input-group" >
+                                    <label >城市维护建设税适用税率（%）</label>
+                                    <input type="number" step="0.1" class="form-control" name="production12" placeholder="数值">
+                                </div>
+
+                                <div class="input-group" >
+                                    <label >教育费附加适用税率（%）</label>
+                                    <input  type="number" step="0.1" class="form-control" name="production13" placeholder="数值">
+                                </div>
+                            </div>
+                        </div>
+
+                    <div class="tab-pane fade" id="Pr_lo" role="tabpanel" aria-labelledby="Pr_lo-tab">
+                         <div class="mb-3">
+                                <div class="input-group" >
+                                    <label >所得税率（%）</label>
+                                    <input  type="number" step="0.1" class="form-control" name="production14" placeholder="数值">
+                                </div>
+                                <div class="input-group" >
+                                    <label >盈余公积金比例（%）</label>
+                                    <input  type="number" step="0.1" class="form-control" name="production15" placeholder="数值">
+                                </div>
+                                <div class="input-group" >
+                                    <label >盈余公益金比例（%）</label>
+                                    <input  type="number" step="0.1" class="form-control" name="production16" placeholder="数值">
+                                </div>
+                         </div>
+                    </div>
+                   </div>
+
+
+
+
+
+<!--                    </div>-->
+<!--                    <div class="mb-3">-->
+<!--                    <h4>工程费用估值</h4>-->
+<!--                        <div id="constructionCosts">-->
+<!--                        </div>-->
+<!--                        <button type="button" class="btn btn-secondary mt-2" id="addCostBtn">添加工程</button>-->
+<!--                    </div>-->
+
+<!--                    <div class="mb-3">-->
+<!--                    <h4>其它费用估值</h4>-->
+<!--                        <div id="otherCosts">-->
+<!--                        </div>-->
+<!--                        <button type="button" class="btn btn-secondary mt-2" id="addotherCostBtn">添加费用</button>-->
+<!--                    </div>-->
+
+<!--                    <div class="mb-3">-->
+<!--                    <h4>建设投资方案<span id="totalInvestment"></span></h4>-->
+<!--                        <div id="constInvenst">-->
+
+<!--                        </div>-->
+<!--                        <button type="button" class="btn btn-secondary mt-2" id="addconstInvenst">添加年度建设投资</button>-->
+<!--                    </div>-->
+
+<!--                        <div class="mb-3">-->
+<!--                            <label class="form-label">折旧方式</label>-->
+<!--                            <div>-->
+<!--                                <div class="form-check">-->
+<!--                                    <input class="form-check-input" type="radio" name="depreciationMethod" id="fixedRate" value="fixedRate">-->
+<!--                                    <label class="form-check-label" for="fixedRate">按固定折旧率</label>-->
+<!--                                </div>-->
+<!--                                <div class="form-check">-->
+<!--                                    <input class="form-check-input" type="radio" name="depreciationMethod" id="byresidualValue" value="residualValue">-->
+<!--                                    <label class="form-check-label" for="residualValue">按折旧残值</label>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+<!--                        <div id="fixedRateInput" class="mb-3" style="display: none;">-->
+<!--                            <label for="depreciationRate" class="form-label">折旧率（%）</label>-->
+<!--                            <input type="number" step="0.1" class="form-control" id="depreciationRate" name="depreciationRate">-->
+<!--                        </div>-->
+
+<!--                        <div id="residualValueInput" class="mb-3" style="display: none;">-->
+<!--                            <label for="residualValue" class="form-label">折旧残值（单位：万元）</label>-->
+<!--                            <input type="number" step="1" class="form-control" id="residualValue" name="residualValuename">-->
+<!--                        </div>-->
+
+
+                    <button type="submit" class="btn btn-primary">保存并计算</button>
+                </form>
+            </div>
+
+            <!-- 右侧表格区域 -->
+<!--            <div class="col-md-8 table-container">-->
+<!--                <h2 class="mb-4">表格展示</h2>-->
+<!--                <ul class="nav nav-tabs" id="myTab2" role="tablist">-->
+<!--                    {% for i in range(1, tables + 1) %}-->
+<!--                    <li class="nav-item" role="presentation">-->
+<!--                        <button class="nav-link {% if i == 1 %}active{% endif %}" id="table{{ i }}-tab" data-bs-toggle="tab" data-bs-target="#table{{ i }}" type="button" role="tab" aria-controls="table{{ i }}" aria-selected="{% if i == 1 %}true{% else %}false{% endif %}">表{{ i }} </button>-->
+<!--                    </li>-->
+<!--                    {% endfor %}-->
+<!--                </ul>-->
+<!--                <div class="tab-content" id="myTabContent2">-->
+<!--                    {% for i in range(1, tables + 1) %}-->
+<!--                    <div class="tab-pane fade {% if i == 1 %}show active{% endif %}" id="table{{ i }}" role="tabpanel" aria-labelledby="table{{ i }}-tab">-->
+<!--                        <div id="x-spreadsheet-{{ i }}" style="width: 100%; height: 600px;"></div>-->
+<!--                    </div>-->
+<!--                    {% endfor %}-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="col-md-8 table-container">
+                <h2 class="mb-4">表格展示</h2>
+                <ul class="nav nav-tabs" id="myTab2" role="tablist">
+                    <!-- 手动创建每个表的标签 -->
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="table1-tab" data-bs-toggle="tab" data-bs-target="#table1" type="button" role="tab" aria-controls="table1" aria-selected="true">表1:建设投资估算</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table2-tab" data-bs-toggle="tab" data-bs-target="#table2" type="button" role="tab" aria-controls="table2" aria-selected="false">表2:流动资金估算</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table3-tab" data-bs-toggle="tab" data-bs-target="#table3" type="button" role="tab" aria-controls="table3" aria-selected="false">表3:借款还本付息</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table4-tab" data-bs-toggle="tab" data-bs-target="#table4" type="button" role="tab" aria-controls="table4" aria-selected="false">表4:投资使用计划与资金筹措</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table5-tab" data-bs-toggle="tab" data-bs-target="#table5" type="button" role="tab" aria-controls="table5" aria-selected="false">表5:固定资产折旧估算</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table6-tab" data-bs-toggle="tab" data-bs-target="#table6" type="button" role="tab" aria-controls="table6" aria-selected="false">表6:无形资产及其他资产摊销</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table7-tab" data-bs-toggle="tab" data-bs-target="#table7" type="button" role="tab" aria-controls="table7" aria-selected="false">表7:总成本费用估算</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table8-tab" data-bs-toggle="tab" data-bs-target="#table8" type="button" role="tab" aria-controls="table8" aria-selected="false">表8:营业收入、营业税金及附加</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table9-tab" data-bs-toggle="tab" data-bs-target="#table9" type="button" role="tab" aria-controls="table9" aria-selected="false">表9:资金来源与运用</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table10-tab" data-bs-toggle="tab" data-bs-target="#table10" type="button" role="tab" aria-controls="table10" aria-selected="false">表10:损益表</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table11-tab" data-bs-toggle="tab" data-bs-target="#table11" type="button" role="tab" aria-controls="table11" aria-selected="false">表11-1:现金流量表（全部投资)</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table12-tab" data-bs-toggle="tab" data-bs-target="#table12" type="button" role="tab" aria-controls="table12" aria-selected="false">表11-2:现金流量表（自有资金)</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table13-tab" data-bs-toggle="tab" data-bs-target="#table13" type="button" role="tab" aria-controls="table13" aria-selected="false">表12:资产负债表</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table14-tab" data-bs-toggle="tab" data-bs-target="#table14" type="button" role="tab" aria-controls="table14" aria-selected="false">盈亏平衡分析数据</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table15-tab" data-bs-toggle="tab" data-bs-target="#table15" type="button" role="tab" aria-controls="table15" aria-selected="false">盈亏平衡分析图</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table16-tab" data-bs-toggle="tab" data-bs-target="#table16" type="button" role="tab" aria-controls="table16" aria-selected="false">敏感性分析数据</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table17-tab" data-bs-toggle="tab" data-bs-target="#table17" type="button" role="tab" aria-controls="table17" aria-selected="false">单因素敏感性分析图</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="table18-tab" data-bs-toggle="tab" data-bs-target="#table18" type="button" role="tab" aria-controls="table18" aria-selected="false">表13:汇总表</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="myTabContent2">
+                    <!-- 手动创建每个表格内容 -->
+                    <div class="tab-pane fade show active" id="table1" role="tabpanel" aria-labelledby="table1-tab">
+                        <div id="x-spreadsheet-1" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table2" role="tabpanel" aria-labelledby="table2-tab">
+                        <div id="x-spreadsheet-2" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table3" role="tabpanel" aria-labelledby="table3-tab">
+                        <div id="x-spreadsheet-3" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table4" role="tabpanel" aria-labelledby="table4-tab">
+                        <div id="x-spreadsheet-4" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table5" role="tabpanel" aria-labelledby="table5-tab">
+                        <div id="x-spreadsheet-5" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table6" role="tabpanel" aria-labelledby="table6-tab">
+                        <div id="x-spreadsheet-6" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table7" role="tabpanel" aria-labelledby="table7-tab">
+                        <div id="x-spreadsheet-7" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table8" role="tabpanel" aria-labelledby="table8-tab">
+                        <div id="x-spreadsheet-8" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table9" role="tabpanel" aria-labelledby="table9-tab">
+                        <div id="x-spreadsheet-9" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table10" role="tabpanel" aria-labelledby="table10-tab">
+                        <div id="x-spreadsheet-10" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table11" role="tabpanel" aria-labelledby="table11-tab">
+                        <div id="x-spreadsheet-11" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table12" role="tabpanel" aria-labelledby="table12-tab">
+                        <div id="x-spreadsheet-12" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table13" role="tabpanel" aria-labelledby="table13-tab">
+                        <div id="x-spreadsheet-13" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table14" role="tabpanel" aria-labelledby="table14-tab">
+                        <div id="x-spreadsheet-14" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table15" role="tabpanel" aria-labelledby="table15-tab">
+                        <!-- 不是 x-spreadsheet，添加自定义内容 -->
+                        <div class="chart-container" >
+                            <canvas id="breakEvenChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="table16" role="tabpanel" aria-labelledby="table16-tab">
+                        <div id="x-spreadsheet-15" style="width: 100%; height: 600px;"></div>
+                    </div>
+                    <div class="tab-pane fade" id="table17" role="tabpanel" aria-labelledby="table17-tab">
+                        <!-- 不是 x-spreadsheet，添加自定义内容 -->
+                        <div class="chart-container" >
+                            <canvas id="sensitivityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="table18" role="tabpanel" aria-labelledby="table18-tab">
+                        <div id="x-spreadsheet-16" style="width: 100%; height: 600px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/xspreadsheet.js"></script>
+    <script src="static/js/jquery-3.6.0.min.js"></script>
+    <script src="static/js/chart.js"></script>
+    <script>
+        let spreadsheets = {};
+
+        let leftInvestment = 0;
+
+        let leftInvestmentPercentage = 0;
+
+        // 初始化 x-spreadsheet
+        for (let i = 1; i <= 16; i++) {
+            spreadsheets[i] = x_spreadsheet(`#x-spreadsheet-${i}`, {
+                mode: 'read',
+                showToolbar: false,
+                showGrid: false,
+                showContextmenu: false,
+                showBottomBar: false,
+                view: {
+                    height: () => document.documentElement.clientHeight * 0.85,
+                    width: () => document.documentElement.clientWidth / 0.7,
+                },
+
+                style: {
+                        bgcolor: '#ffffff',
+                        align: 'center',
+                        valign: 'middle',
+                        textwrap: true,
+                        strike: false,
+                        underline: false,
+                        color: '#0a0a0a',
+                        font: {
+                          name: 'Helvetica',
+                          size: 10,
+                          bold: false,
+                          italic: false,
+                              },
+                        },
+            });
+            spreadsheets[i].loadData({});
+        }
+
+        // 画图部分
+        // 创建自定义插件来绘制文本
+        const breakEvenTextPlugin = {
+            id: 'breakEvenText',
+            afterDraw: (chart, args, options) => {
+                const { ctx, chartArea: { top, right, bottom, left, width, height } } = chart;
+
+                ctx.save();
+                const breakEvenPoint = chart.data.datasets[2].data[0];
+                if (breakEvenPoint) {
+                    const xScale = chart.scales.x;
+                    const yScale = chart.scales.y;
+                    const x = xScale.getPixelForValue(breakEvenPoint.x);
+                    const y = yScale.getPixelForValue(breakEvenPoint.y*1.3);
+
+                    ctx.font = '18px Arial';
+                    ctx.fillStyle = 'red';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`盈亏平衡点：${breakEvenPoint.x.toFixed(2)}`, x, y - 15);
+                }
+                ctx.restore();
+            }
+        };
+
+        // 盈亏平衡分析图
+        const breakEvenCtx = document.getElementById('breakEvenChart').getContext('2d');
+        const breakEvenChart = new Chart(breakEvenCtx, {
+            type: 'line',
+            plugins: [breakEvenTextPlugin],
+            data: {
+                datasets: [{
+                    label: '总收入',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 2,
+                    fill: true
+                }, {
+                    label: '总成本',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderWidth: 2,
+                    fill: true
+                }, {
+                    label: '盈亏平衡点',
+                    data: [],
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    backgroundColor: 'rgba(255, 206, 86, 1)',
+                    pointStyle: 'circle',
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    showLine: false
+                },
+                {
+                    label: '总利润',
+                    borderColor: 'rgba(138,43,226,1)',
+                    backgroundColor: 'rgba(138,43,226,0.2)',
+                    borderWidth: 2,
+                    fill: true
+                }
+            ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '盈亏平衡分析图',
+                        font: { size: 18 }
+                    },
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: { display: true, text: '产量' },
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                    },
+                    y: {
+                        title: { display: true, text: '金额' },
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+
+    // 敏感性分析图
+    const sensitivityCtx = document.getElementById('sensitivityChart').getContext('2d');
+    const sensitivityChart =new Chart(sensitivityCtx, {
+        type: 'line',
+        data: {
+            labels: ['-20%', '-10%', '0', '10%', '20%'],
+            datasets: [{
+                label: '建设投资变化',
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }, {
+                label: '经营成本变化',
+                borderColor: 'rgb(255, 99, 132)',
+                tension: 0.1
+            },{
+                label: '销售收入变化',
+                borderColor: 'rgb(138,43,226)',
+                tension: 0.1
+            }
+
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: '敏感性分析图'
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: '变化百分比'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: '净现值 (NPV)'
+                    }
+                }
+            }
+        }
+    });
+
+
+        $(document).ready(function() {
+            loadtoAllTable();
+            let projectcostCounter = 0;
+            let othercostCounter = 0;
+
+            // 点击添加工程的按钮
+            $('#addCostBtn').click(function() {
+                projectcostCounter++;
+                let newCostField = `
+                    <div class="mb-2 additional-cost">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="additionalCostName_${projectcostCounter}" placeholder="工程名称">
+                            <input type="number" step="1" class="form-control" name="additionalCostAmount_${projectcostCounter}" placeholder="工程量">
+                            <input type="number" step="1" class="form-control" name="additionalCostPrice_${projectcostCounter}" placeholder="单价（元）">
+                            <input type="number" step="1" class="form-control" name="additionalCostEquipment_${projectcostCounter}" placeholder="设备购置费">
+                            <button type="button" class="btn btn-danger remove-project-cost">删除</button>
+                        </div>
+                    </div>
+                `;
+                $('#constructionCosts').append(newCostField);
+            });
+
+            // 删除添加的工程
+            $(document).on('click', '.remove-project-cost', function() {
+                $(this).closest('.additional-cost').remove();
+                projectcostCounter--;
+            });
+
+            // 点击添加其它费用的按钮
+            $('#addotherCostBtn').click(function() {
+                othercostCounter++;
+                let newCostField = `
+                    <div class="mb-2 additional-cost">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="additionalotherCostName_${othercostCounter}" placeholder="费用名称">
+                            <input type="number" step="1" class="form-control" name="additionalOtherCost_${othercostCounter}" placeholder="费用（万元）">
+                            <select class="form-select" name="additionalOtherCostType_${othercostCounter}">
+                                <option value="">选择资产类型</option>
+                                <option value="intangible">无形资产</option>
+                                <option value="other">其他资产</option>
+                                <option value="tudi">土地征用费</option>
+                            </select>
+                            <button type="button" class="btn btn-danger remove-cost">删除</button>
+                        </div>
+                    </div>
+                `;
+                $('#otherCosts').append(newCostField);
+            });
+
+            // 删除添加的其它费用
+            $(document).on('click', '.remove-cost', function() {
+                $(this).closest('.additional-cost').remove();
+                othercostCounter--;
+            });
+
+            // 处理折旧方法变化的事件
+            $('input[name="depreciationMethod"]').change(function() {
+                if (this.value === 'fixedRate') {
+                    $('#fixedRateInput').show();
+                    $('#residualValueInput').hide();
+                    $('#residualValue').val(''); // 清空隐藏字段的值
+                } else if (this.value === 'residualValue') {
+                    $('#fixedRateInput').hide();
+                    $('#residualValueInput').show();
+                    $('#depreciationRate').val(''); // 清空隐藏字段的值
+                }
+            });
+
+            // 计算总投资额的函数
+            function calculateTotalInvestment() {
+                let total = 0;
+                const tran_rate = parseFloat(document.getElementById('trans_rate').value) * 0.01;
+                const ins_rate = parseFloat(document.getElementById('install_rate').value) * 0.01;
+                const base_pre = parseFloat(document.getElementById('pre_rate').value) * 0.01;
+                const up_pre = parseFloat(document.getElementById('preup_rate').value) * 0.01;
+
+                // 计算工程费用
+                $('#constructionCosts .additional-cost').each(function() {
+                    const amount = parseFloat($(this).find('input[name^="additionalCostAmount"]').val()) || 0;
+                    const price = parseFloat($(this).find('input[name^="additionalCostPrice"]').val()) || 0;
+                    const equipment = parseFloat($(this).find('input[name^="additionalCostEquipment"]').val()) || 0;
+                    total += amount * price /10000 + equipment + equipment * (1 - tran_rate) * ins_rate;
+                });
+
+                const projectTotal = total
+
+                // 计算其他费用
+                $('#otherCosts .additional-cost').each(function() {
+                    const cost = parseFloat($(this).find('input[name^="additionalOtherCost"]').val()) || 0;
+                    total += cost;
+                });
+
+                const binTotal = total
+
+                // 计算预备费用
+                total += binTotal * base_pre
+                total += projectTotal * up_pre
+
+
+
+                // 更新显示
+                $('#totalInvestment').text(`（总投资：${Math.round(total)}万元）`);
+                $('#totalInvestment1').text(`${Math.round(total)}万元`);
+
+
+                return total;
+            }
+            // 在添加或删除工程和其他费用时重新计算总投资
+            $('#addCostBtn, #addotherCostBtn').click(calculateTotalInvestment);
+            $(document).on('click', '.remove-project-cost,.remove-cost', calculateTotalInvestment);
+
+            // 在输入框值变化时重新计算总投资
+            $(document).on('input', '#constructionCosts input, #otherCosts input', calculateTotalInvestment);
+
+            let constInvenstCounter = 0;
+            let inv_total = 0;
+
+            // 初始化函数
+            function initializeInvestment() {
+                inv_total = calculateTotalInvestment();
+                updateTotalInvestmentRow();
+                addInitialInvPlanRow();
+            }
+
+            // 更新总投资行
+            function updateTotalInvestmentRow() {
+                inv_total = calculateTotalInvestment(); // 更新总投资额
+                console.log("计算时总投资额是", inv_total)
+                const totalInvestAmount = inv_total - calculateSumOfYears();
+                console.log("计算时剩余投资额是",totalInvestAmount)
+                let totalInvestPercentage = 0;
+
+                if (inv_total > 0) {
+                    totalInvestPercentage = ((totalInvestAmount / inv_total) * 100).toFixed(1);
+                } else {
+                    totalInvestPercentage = "100.0"; // 如果总投资为0，则百分比为100%
+                }
+
+                let totalRow = `
+                    <div class="mb-2 total-invest">
+                        <div class="input-group">
+                            <span class="input-group-text">第${constInvenstCounter + 1}年</span>
+                            <span class="input-group-text">投资金额: ${Math.round(totalInvestAmount)}万元，占比: ${totalInvestPercentage}%</span>
+                        </div>
+                    </div>
+                `;
+
+                $('.total-invest').remove();
+                $('#constInvenst').append(totalRow);
+                leftInvestment = Math.round(totalInvestAmount);
+                leftInvestmentPercentage = (totalInvestAmount / inv_total * 100).toFixed(1);
+                return totalInvestAmount;
+            }
+
+            // 添加初始的invPlan行
+            function addInitialInvPlanRow() {
+                let initialInvPlan = `
+                    <div class="mb-2 invest-plan">
+                        <div class="input-group">
+                            <span class="input-group-text">第1年</span>
+                            <input type="number" step="1" class="invest-amount loan-amount" name="loanAmount_1" placeholder="借款投资金额（万元）">
+                            <input type="number" step="0.1" class="invest-percentage loan-percentage" name="loanPercentage_1" placeholder="借款投资金额占比（%）">
+                            <div class="w-100 mb-2">
+                            <span class="invest-amount own-amount" ></span>
+                            </div>
+                            <div class="w-100 mb-2">
+                            <span class="invest-percentage own-percentage"></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $('#invPlan').append(initialInvPlan);
+            }
+
+            // 计算除总行外其他年份投资金额之和
+            function calculateSumOfYears() {
+                let sum = 0;
+                $('.invest-am').each(function() {
+                    sum += parseFloat($(this).val()) || 0;
+                });
+                return sum;
+            }
+
+            // 点击添加年度建设投资的按钮
+            $('#addconstInvenst').click(function() {
+                const constructionPeriod = parseInt($('#input2').val()) || 0;
+
+                if (constInvenstCounter + 1 >= constructionPeriod) {
+                    alert("建设投资方案超过建设期年限");
+                    return;
+                }
+                constInvenstCounter++;
+                let newInvestField = `
+                    <div class="mb-2 additional-invest">
+                        <div class="input-group">
+                            <span class="input-group-text">第${constInvenstCounter}年</span>
+                            <input type="number"  step="1" class="invest-am" name="investAmount_${constInvenstCounter}" placeholder="投资金额（万元）">
+                            <input type="number"  step="0.1" class="invest-percent" name="investPercentage_${constInvenstCounter}" placeholder="投资金额占比（%）">
+                            <button type="button" class="btn btn-danger remove-invest">删除</button>
+                        </div>
+                    </div>
+                `;
+
+                let newInvPlan = `
+                    <div class="mb-2 invest-plan">
+                        <div class="input-group">
+                            <span class="input-group-text">第${constInvenstCounter+1}年</span>
+                            <input id="loanAmount_${constInvenstCounter}" type="number"  step="1" class="invest-amount loan-amount" name="loanAmount_${constInvenstCounter}" placeholder="借款投资金额（万元）">
+                            <input id="loanAmount_${constInvenstCounter}" type="number" step="0.1" class="invest-percentage loan-percentage" name="loanPercentage_${constInvenstCounter}" placeholder="借款投资金额占比（%）">
+                            <div class="w-100 mb-2">
+                            <span class="invest-amount own-amount" ></span>
+                            </div>
+                            <div class="w-100 mb-2">
+                            <span class="invest-percentage own-percentage" ></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                $('#constInvenst .total-invest').before(newInvestField);
+                $('#invPlan').append(newInvPlan);
+                updateTotalInvestmentRow();
+            });
+
+            // 监听投资金额的变化
+            $(document).on('input', '.invest-am', function() {
+                updateTotalInvestmentRow();
+            });
+
+            // 使用事件委托来处理所有可能影响总投资的输入
+            $(document).on('input', '#pre_rate, #preup_rate, #install_rate, #trans_rate, #constructionCosts input, #otherCosts input', function() {
+                inv_total = calculateTotalInvestment();
+                updateTotalInvestmentRow();
+                updateInvestmentPercentages()
+            });
+
+            $(document).on('input', '#constructionCosts input, #otherCosts input', calculateTotalInvestment);
+
+
+
+
+            // 删除添加的年度建设投资
+            $(document).on('click', '.remove-invest', function() {
+                const index = $(this).closest('.additional-invest').index();
+                $(this).closest('.additional-invest').remove();
+                $('#invPlan .invest-plan').eq(index).remove();
+                constInvenstCounter--;
+                reorderInvestmentYears();
+                updateInvestmentPercentages();
+            });
+
+            // 重新排序年度标签的函数
+            function reorderInvestmentYears() {
+                $('.additional-invest').each(function(index) {
+                    $(this).find('.input-group-text').text(`第${index + 1}年`);
+                    $(this).find('.invest-am').attr('name', `investAmount_${index + 1}`);
+                    $(this).find('.invest-percent').attr('name', `investPercentage_${index + 1}`);
+                });
+
+                $('#invPlan .invest-plan').each(function(index) {
+                    $(this).find('.input-group-text').text(`第${index + 1}年`);
+                    $(this).find('input').each(function() {
+                        const oldName = $(this).attr('name');
+                        const newName = oldName.replace(/\d+$/, index + 1);
+                        $(this).attr('name', newName);
+                    });
+                });
+                updateTotalInvestmentRow();
+            }
+
+
+            // 处理表单提交的事件
+            $('#dataForm').submit(function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+
+                // 添加折旧方法到 formData
+                var depreciationMethod = $('input[name="depreciationMethod"]:checked').val();
+                formData.append('depreciationMethod', depreciationMethod);
+
+                formData.append('projectcostCounter', projectcostCounter);
+                formData.append('othercostCounter', othercostCounter);
+                formData.append('constInvenstCounter', constInvenstCounter);
+
+<!--                // 如果选择了固定折旧率，但输入框是隐藏的，移除该值-->
+<!--                if (depreciationMethod !== 'fixedRate') {-->
+<!--                    formData.delete('depreciationRate');-->
+<!--                }-->
+
+<!--                // 如果选择了折旧残值，但输入框是隐藏的，移除该值-->
+<!--                if (depreciationMethod !== 'residualValue') {-->
+<!--                    formData.delete('residualValue');-->
+<!--                }-->
+
+                // 处理额外的建筑费用
+                let additionalCosts = {};
+                $('.additional-cost').each(function(index) {
+                    let name = $(this).find('input[type="text"]').val();
+                    let amount = $(this).find('input[type="number"]').val();
+                    additionalCosts[name] = amount;
+                });
+                formData.append('additionalCosts', JSON.stringify(additionalCosts));
+
+                // 处理建设投资方案数据
+                formData.append('constInvenstCounter', constInvenstCounter);
+
+                // 处理建设投资方案数据
+                let investmentPlan = {};
+                $('.additional-invest').each(function(index) {
+                    let year = index + 1;
+                    let amount = $(this).find('input[name^="investAmount"]').val();
+                    let percentage = $(this).find('input[name^="investPercentage"]').val();
+                    investmentPlan[year] = {amount: amount, percentage: percentage};
+                });
+                formData.append('investmentPlan', JSON.stringify(investmentPlan));
+
+                // 处理资金筹措方案数据
+                let LoanPlan = {};
+                $('.invest-plan').each(function(index) {
+                    let year = index + 1;
+                    let amount = $(this).find('input[name^="loanAmount"]').val();
+                    let percentage = $(this).find('input[name^="loanPercentage"]').val();
+                    LoanPlan[year] = {amount: amount, percentage: percentage};
+                });
+                formData.append('LoanPlan', JSON.stringify(LoanPlan));
+
+                formData.append('leftInvestment',leftInvestment);
+                formData.append('leftInvestmentPercentage',leftInvestmentPercentage);
+
+                var object = {};
+                formData.forEach((value, key) => object[key] = value);
+                var json = JSON.stringify(object);
+
+                console.log('Form data:', json);
+
+                $.ajax({
+                    url: '/submit',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        alert(response.message);
+                        loadtoAllTable();
+
+                    },
+                    error: function(xhr, status, error) {
+                        alert('提交失败: ' + error);
+                    }
+                });
+            });
+
+            // 更新投资金额占比
+            function updateInvestmentPercentages() {
+                const totalInvestment = calculateTotalInvestment();
+                $('.additional-invest').each(function() {
+                    const amountInput = $(this).find('input[name^="investAmount"]');
+                    const percentageInput = $(this).find('input[name^="investPercentage"]');
+                    const amount = parseFloat(amountInput.val()) || 0;
+                    const percentage = (amount / totalInvestment * 100).toFixed(1);
+                    percentageInput.val(percentage);
+                });
+            }
+
+            // 更新投资金额和占比
+            function updateInvestmentAmountsAndPercentages(changedInput) {
+
+                const totalInvestment = calculateTotalInvestment();
+                let isPercentageChanged = changedInput.hasClass('invest-percent');
+
+
+                if (isPercentageChanged) {
+                    // 如果修改的是百分比，更新金额
+                    const percentage = Math.round(parseFloat(changedInput.val())) || 0;
+                    const amount = Math.round(percentage / 100 * totalInvestment);
+                    changedInput.closest('.additional-invest').find('.invest-am').val(amount);
+                } else {
+                    // 如果修改的是金额，更新百分比
+                    const amount = parseFloat(changedInput.val()) || 0;
+                    console.log( totalInvestment )
+                    const percentage = (amount / totalInvestment * 100).toFixed(1);
+                    changedInput.closest('.additional-invest').find('.invest-percent').val(percentage);
+                }
+
+
+                let rollback = false;
+                let t = updateTotalInvestmentRow();
+                if (t < 0) {
+                    // 如果 totalPercentage 大于 100，弹出警告并回滚修改
+                    alert("每年建设投资额总和不可超过建设投资总额");
+                    rollback = true;
+                }
+
+
+                if (rollback) {
+                    console.log("回滚")
+
+                    // 恢复原始值
+                    $('.additional-invest').each(function() {
+                    console.log($(this).data('original-amount'))
+                    console.log($(this).data('original-percentage'))
+                        $(this).find('.invest-am').val($(this).data('original-am'));
+                        $(this).find('.invest-percent').val($(this).data('original-percentage'));
+                    });
+                    updateTotalInvestmentRow();
+                }
+
+                // 保存原始金额和百分比（仅在第一次修改时）
+                if (!changedInput.data('original-amount')) {
+                    console.log("触发判断")
+                    changedInput.closest('.additional-invest').data('original-amount', changedInput.closest('.additional-invest').find('.invest-am').val());
+                    changedInput.closest('.additional-invest').data('original-percentage', changedInput.closest('.additional-invest').find('.invest-percent').val());
+                }
+
+            }
+
+            // 监听建设期输入框的变化
+            $('#input2').on('input', function() {
+                const constructionPeriod = parseInt($(this).val()) || 0;
+                while (constInvenstCounter > constructionPeriod) {
+                    $('.additional-invest:last').remove();
+                    constInvenstCounter--;
+                }
+                updateInvestmentAmountsAndPercentages($('.invest-am').first());
+            });
+
+
+                // 监听投资金额和占比输入框的变化
+                $(document).on('input', '.invest-am, .invest-percent', function() {
+                    updateInvestmentAmountsAndPercentages($(this));
+                    let $constInvenstRow = $(this).closest('.additional-invest');
+                    let constInvenstIndex = $constInvenstRow.index();
+
+                    let $invPlanRow = $('#invPlan .invest-plan').eq(constInvenstIndex);
+                    let loanPer = parseFloat($invPlanRow.find('.loan-percentage').val()) || 0;
+
+                    let $loanAmountInput = $invPlanRow.find('.loan-amount');
+                    let investAmount = parseFloat($(this).closest('.additional-invest').find('.invest-am').val()) || 0;
+                    let loanAmount = Math.round(investAmount * loanPer / 100);
+                    $loanAmountInput.val(loanAmount);
+                    // 计算自有资金投资金额
+                    let ownAmount = investAmount - loanAmount;
+                    let ownPercentage = 100 - loanPer;
+
+                    // 更新自有资金投资金额占比
+                    $invPlanRow.find('.own-percentage').text(`自有资金投资金额占比为${ownPercentage.toFixed(1)}%`);
+
+                    // 更新自有资金投资金额
+                    $invPlanRow.find('.own-amount').text(`自有资金投资金额为${Math.round(ownAmount)}万元\n`);
+                });
+
+<!--            // 监听投资金额和占比输入框的变化-->
+<!--            $(document).on('input', '.invest-am, .invest-percent', function() {-->
+<!--                updateInvestmentAmountsAndPercentages($(this));-->
+<!--            });-->
+
+<!--            // 使用事件委托来处理所有当前和未来的 loan-percentage 输入框-->
+<!--            $('#invPlan').on('input', '.loan-percentage', function() {-->
+<!--                let loanPercentage = parseFloat($(this).val()) || 0;-->
+<!--                let ownPercentage = 100 - loanPercentage;-->
+<!--                let $invPlanRow = $(this).closest('.invest-plan');-->
+<!--                let invPlanIndex = $invPlanRow.index();-->
+
+<!--                // 获取对应的 constInvenst 行-->
+<!--                let $constInvenstRow = $('#constInvenst .additional-invest').eq(invPlanIndex);-->
+<!--                let investAmount = parseFloat($constInvenstRow.find('.invest-am').val()) || 0;-->
+
+<!--                // 计算自有资金投资金额-->
+<!--                let ownAmount = investAmount * (ownPercentage / 100);-->
+
+<!--                // 更新自有资金投资金额占比-->
+<!--                $invPlanRow.find('.own-percentage').text(`自有资金投资金额占比为${ownPercentage.toFixed(1)}%`);-->
+
+<!--                // 更新自有资金投资金额-->
+<!--                $invPlanRow.find('.own-amount').text(`自有资金投资金额为${Math.round(ownAmount)}万元\n`);-->
+<!--            });-->
+
+            // 更新借款金额和占比
+            function updateLoanAmountsAndPercentages(changedInput) {
+                const $invPlanRow = changedInput.closest('.invest-plan');
+                const invPlanIndex = $invPlanRow.index();
+                console.log("获取到的原index是",invPlanIndex)
+
+                console.log("此时count是",constInvenstCounter)
+
+                let investAmount;
+                if (invPlanIndex === constInvenstCounter) {
+                    inv_total = calculateTotalInvestment(); // 更新总投资额
+                    investAmount = inv_total - calculateSumOfYears();
+                } else {
+                    const $constInvenstRow = $('#constInvenst .additional-invest').eq(invPlanIndex);
+                    investAmount = parseFloat($constInvenstRow.find('.invest-am').val()) || 0;
+                }
+
+
+                console.log("获取到的对应行投资额是",investAmount)
+
+                let isPercentageChanged = changedInput.hasClass('loan-percentage');
+                let $loanAmount = $invPlanRow.find('.loan-amount');
+                let $loanPercentage = $invPlanRow.find('.loan-percentage');
+
+                let newLoanAmount, newLoanPercentage;
+
+                if (isPercentageChanged) {
+                    // 如果修改的是百分比，更新金额
+                    newLoanPercentage = parseFloat(changedInput.val()) || 0;
+                    newLoanAmount = Math.round(newLoanPercentage / 100 * investAmount);
+                    $loanAmount.val(newLoanAmount);
+                } else {
+                    // 如果修改的是金额，更新百分比
+                    newLoanAmount = parseFloat(changedInput.val()) || 0;
+                    newLoanPercentage = (newLoanAmount / investAmount * 100).toFixed(1);
+                    $loanPercentage.val(newLoanPercentage);
+                }
+
+                // 数据验证
+                if (newLoanPercentage < 0 || newLoanPercentage > 100) {
+                    alert("借款金额需为小于年投资额的正值");
+                    // 回滚
+                    $loanAmount.val($loanAmount.data('original-value') || '');
+                    $loanPercentage.val($loanPercentage.data('original-value') || '');
+                } else {
+                    // 更新成功，保存新的原始值
+                    $loanAmount.data('original-value', newLoanAmount);
+                    $loanPercentage.data('original-value', newLoanPercentage);
+
+                    // 更新自有资金金额和百分比
+                    let ownAmount = investAmount - newLoanAmount;
+                    let ownPercentage = 100 - newLoanPercentage;
+                    $invPlanRow.find('.own-amount').text(`自有资金投资金额为${Math.round(ownAmount)}万元`);
+                    $invPlanRow.find('.own-percentage').text(`自有资金投资金额占比为${ownPercentage.toFixed(1)}%`);
+                }
+            }
+
+            // 监听借款金额和占比输入框的变化
+            $(document).on('input', '.loan-amount, .loan-percentage', function() {
+                updateLoanAmountsAndPercentages($(this));
+            });
+
+            calculateTotalInvestment();
+            initializeInvestment();
+        });
+
+        // 加载数据到表格的函数
+        function loadtoAllTable() {
+            $.ajax({
+                url: '/get_data',
+                type: 'GET',
+                success: function(data) {
+                    if (data) {
+                    console.log(data);
+
+                        for (let key = 1; key <= 16; key++) {
+
+                            if (data.hasOwnProperty(key)) {
+                                const value = data[key];
+                                if (spreadsheets[key]) {
+                                    // 将值加载到对应的 spreadsheet 实例中
+                                    spreadsheets[key].loadData(value);
+                                } else {
+                                    console.warn(`Spreadsheet instance for key ${key} not found.`);
+                                }
+                            } else {
+                                console.warn(`Data for key ${key} not provided.`);
+                            }
+                        }
+
+                        // 处理盈亏平衡分析图数据（17）
+                        if (data.hasOwnProperty(17)) {
+                            const breakEvenData = data[17];
+                            breakEvenChart.data.datasets[0].data = breakEvenData.totalRevenue;
+                            breakEvenChart.data.datasets[1].data = breakEvenData.totalCost;
+                            breakEvenChart.data.datasets[2].data = [breakEvenData.breakEvenPoint];
+                            breakEvenChart.update();
+                        }
+
+                        // 处理敏感性分析图数据（18）
+                        if (data.hasOwnProperty(18)) {
+                            const sensitivityData = data[18];
+                            sensitivityChart.data.datasets[0].data = sensitivityData.constructionInvestment;
+                            sensitivityChart.data.datasets[1].data = sensitivityData.operatingCost;
+                            sensitivityChart.data.datasets[2].data = sensitivityData.salesRevenue;
+                            sensitivityChart.update();
+                        }
+
+
+                    } else {
+                        console.log('No data available');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('加载数据失败:', error);
+                    alert('加载数据失败: ' + error);
+                }
+            });
+        }
+
+        function generateProductionLoad() {
+            const constructSpanInput = document.getElementById('input2');
+            const lifespanInput = document.getElementById('input1');
+            const productionLoadFields = document.getElementById('productionLoadFields');
+            const lifespan = parseInt(lifespanInput.value);
+            const constructSpan = parseInt(constructSpanInput.value);
+
+            // 清空现有的字段
+            productionLoadFields.innerHTML = '';
+
+            if (lifespan > 0) {
+                for (let i = constructSpan+1; i <= lifespan; i++) {
+                    const fieldDiv = document.createElement('div');
+                    fieldDiv.className = 'mb-2';
+
+                    const label = document.createElement('label');
+                    label.className = 'form-label';
+                    label.textContent = `第${i}年生产负荷 (%)`;
+
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.className = 'form-control';
+                    input.id = `productionLoad${i}`;
+                    input.name = `productionLoad${i}`;
+                    input.min = '0';
+                    input.max = '100';
+                    input.step = '0.1';
+
+                    fieldDiv.appendChild(label);
+                    fieldDiv.appendChild(input);
+                    productionLoadFields.appendChild(fieldDiv);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
